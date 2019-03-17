@@ -33,10 +33,16 @@ for (i = 0; i < maxMemory; i++) memoryTable[i] = null;
  */
 function advancePC(dest) 
 {
+    // Check if the position is greater than the current instructions...
     if (PC > currInstr) return;
 
-    document.getElementById('C' + PC + 'PC').innerHTML = '&nbsp';
+    // Set our current position indicator to a blank...
+    document.getElementById('C' + PC + 'PC').innerHTML = ``;
+    
+    // Set our cursor to the new destination position...
     PC = dest;
+
+    // Set our new position indicator to a arrow...
     document.getElementById('C' + PC + 'PC').innerHTML = '==>';
 }
 
@@ -47,17 +53,32 @@ function advancePC(dest)
  */
 function completeGetInput(line) 
 {
-    if (waitingForInput) 
-    {
-        theInput = parseInt(document.getElementById('input').value);
-        document.getElementById('registerResult').value = parseInt(document.getElementById('input').value);
-        document.getElementById('iomessages').innerHTML = '&nbsp;';
-        memoryTable[inputAddress] = theInput;
-        HTMLmemoryTable();
-        advancePC(PC + 1);
-        document.getElementById('input').value = null;
-        waitingForInput = false;
-    }
+    // Check if we are even waiting for any input...
+    if (!waitingForInput) return;
+
+    // Setup the input by parsing it to a integer...
+    theInput = parseInt(document.getElementById('input').value);
+
+    // Set the register result to reflect the input... (so you can JUMPIFZERO directly)
+    document.getElementById('registerResult').value = parseInt(document.getElementById('input').value);
+
+    // Set our IO messages to be blank...
+    document.getElementById('iomessages').innerHTML = ``;
+
+    // Set the value of the memory according to the input...
+    memoryTable[inputAddress] = theInput;
+
+    // Rerender our memory table...
+    HTMLmemoryTable();
+
+    // Advance our cursor...
+    advancePC(PC + 1);
+
+    // Remove the input value...
+    document.getElementById('input').value = null;
+
+    // Reset our waitingForInput...
+    waitingForInput = false;
 }
 
 /**
@@ -236,9 +257,7 @@ function HTMLdestinationField(line)
 {
     result = `<select name="destination" id="${line}destination" onchange="updateAddressValue(event, '${line}')">\n`;
     result += '<option value="C1" selected="selected">C1</option>\n';
-    for (i = 2; i <= currInstr; i++) {
-        result += '<option value="C' + i + '">C' + i + '</option>\n';
-    }
+    for (i = 2; i <= currInstr; i++) result += '<option value="C' + i + '">C' + i + '</option>\n';
     result += '</select>\n';
     return result;
 }
@@ -817,8 +836,6 @@ function resetMemory()
     // Rerender our memory table...
     HTMLmemoryTable();
 }
-
-
 
 /**
  * validateKeyPress
