@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>C1500 Mark III</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        body {
+            background: #171717;
+            font-family: sans-serif;
+            margin:0;
+        }
+
+        #menu {
+            overflow: hidden;
+            border-bottom: 1px solid #313131;
+            background-color: #191919;
+            margin: -14px;
+            margin-bottom: 0;
+            height: 43px;
+        }
+
+        #menu div  {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.1s;
+            font-size: 13px;
+            color:rgb(148, 148, 148);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;         
+        }
+        #menu div:hover {
+            background-color: rgb(34, 34, 34);
+        }
+
+        #menu .active {
+            background-color: rgb(17, 17, 17);
+            color:white;
+            z-index:1;
+        }
+
+        #loader {
+            opacity: 0;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 100px;
+            height: 18px;
+            padding: 10px;
+            color: #848484;
+            background: #292929;
+            border-radius: 5px;
+            border: 1px solid #444444;
+        }
+
+        #loader img {
+            filter: invert(1);
+            height: 17px;
+            margin-right: 9px;
+            margin-left: 4px;
+            margin-bottom: -3px;
+        }
+
+        #copyright {
+            color: #6f6c6c;
+        }
+
+        #window {
+            max-width: 1100px;
+            border: 1px solid #313131;
+            background: #212121;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px auto;
+            text-align: center;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        .dynaset {
+            font-family: Courier, "Courier New", monospace;
+            white-space: pre;
+            height: 12em;
+            overflow: scroll;
+        }
+
+        .x {
+            opacity: 1;
+            margin-left: 4px;
+            height: 9px;
+            filter: invert(1);
+            width:9px;
+            z-index: 3;
+        }
+
+        .x:hover {
+            opacity: 0.5;
+        }
+
+        .add {
+            opacity: 1;
+            margin: -3px;
+            height: 15px;
+            filter: invert(1);
+        }
+
+        .icon {
+            margin-bottom:-4px;
+            margin-right:4px;
+        }
+
+        select, input[type=text] {
+            background: #212121;
+            outline: 0;
+            border: 0;
+            border-bottom: 1px solid #383838;
+            padding: 5px;
+            margin-bottom: 3px;
+            color: white;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            transition: 0.2s;  
+        }
+
+        #descriptionTitles {
+            font-size: 16px;
+            color: #9c9c9c;
+            height: 41px !important;
+        }
+
+        #opcodeList > tbody > tr {
+            height: 42px;
+        }
+
+        select {
+            background: url("img/dropdown.svg") 96% / 7% no-repeat #212121;
+            border-radius:0;
+        }
+
+        select:hover, input[type=text]:hover {
+            border-bottom: 1px solid #555555;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #import-button, input[type=button] {
+            outline:0;
+            background: 0;
+            color: white;
+            border: 1px solid #525252;
+            padding: 5px 25px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 11px;
+            margin:3px;
+            transition: 0.1s;
+        }
+
+        #import-button:hover, input[type=button]:hover {
+            background: gray;
+            color:black;
+        }
+
+        #import-button:active, input[type=button]:active {
+            background: rgb(63, 63, 63);
+            color:white;
+        }
+
+        fieldset {
+            border: 1px solid #404040;
+        }
+
+        legend {
+            color:gray;
+            margin-bottom:5px;
+        }
+
+        table memoryTable {
+            border-collapse: collapse;
+        }
+
+        table topSegment {
+            border-collapse: collapse;
+        }
+
+        .topSegment {
+            border: 1px solid grey;
+        }
+
+        select {
+            width: 10em;
+        }
+
+        .register {
+            border: 0 !important;
+            border-bottom: 1px solid gray !important;
+            border-radius: 0 !important;
+            text-align: center;
+            background: 0 !important;
+            font-size: 25px;
+        }
+
+        .current {
+            border: 2px solid green;
+            border-radius: 4px;
+        }
+
+        #outputForm {
+            margin-top: 22px;
+        }
+
+        #program {
+            margin-top:10px;
+        }
+
+        /* COMMENT THIS TO DEBUG */
+        #Messages {
+            display: none; 
+        }
+
+        @keyframes fadein {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-moz-keyframes fadein {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-webkit-keyframes fadein {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-ms-keyframes fadein {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-o-keyframes fadein {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+
+<body onload="loadAll();">
+    <div id="loader"><img src="img/spin.svg" />Saving...</div>
+    <div id="window">
+        <div id="menu"></div>
+            
+        <h2>C1500 Mark III </h2>
+        <div id="Messages"> &nbsp; </div>
+
+        <div>
+            <table>
+                <tr width="100%">
+                    <td>
+                        <form id="memoryTable" action="">
+                            &nbsp;
+                        </form>
+                    </td>
+
+                    <td>
+                        <form id="registers" action="">
+                            <fieldset>
+                                <legend>Registers</legend>
+                                <table>
+                                    <tr>
+                                        <td width="45%" style="text-align:center">
+                                            <input type="text" class="register" id="registerA" readonly="readonly" size="6" />
+                                        </td>
+                                        <td width="10%">&nbsp;</td>
+                                        <td width="45%" style="text-align:center">
+                                            <input type="text" class="register" id="registerB" readonly="readonly" size="6" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 114" width="400" height="114">
+                                                <style>
+                                                    tspan { white-space:pre }
+                                                    .shp0 { fill: #99d5ff;stroke: #000000;stroke-width: 1.4 } 
+                                                </style>
+                                                <path id="Shape 1" class="shp0" d="M76,111h245l74,-109h-182l-21,22l-20,-22h-170z"/>
+                                                <path id="A " fill="#000000" d="M93.74 20.61L90.99 12.36L88.25 20.61L93.74 20.61ZM84.16 26.72L89.85 10.15L92.15 10.15L97.83 26.72L95.73 26.72L94.37 22.47L87.64 22.47L86.29 26.72L84.16 26.72Z"/>
+                                                <path id="B " fill="#000000" d="M296.26 18.81L293.03 18.81L293.03 24.88L296.26 24.88Q297.89 24.88 298.67 24.14Q299.45 23.38 299.45 21.84Q299.45 20.29 298.67 19.55Q297.89 18.81 296.26 18.81ZM296.01 12L293.03 12L293.03 16.99L296.01 16.99Q297.49 16.99 298.21 16.38Q298.94 15.76 298.94 14.49Q298.94 13.24 298.21 12.62Q297.49 12 296.01 12ZM291.01 26.72L291.01 10.15L296.16 10.15Q298.47 10.15 299.71 11.22Q300.96 12.28 300.96 14.25Q300.96 15.77 300.32 16.67Q299.69 17.57 298.44 17.79Q299.94 18.14 300.76 19.28Q301.59 20.4 301.59 22.08Q301.59 24.3 300.22 25.51Q298.87 26.72 296.36 26.72L291.01 26.72Z"/>
+                                                <path id="RESULT " fill="#000000" d="M168.6 99.28Q169.21 99.51 169.78 100.25Q170.35 101 170.93 102.3L172.84 106.52L170.81 106.52L169.03 102.56Q168.35 101.01 167.7 100.5Q167.06 100 165.94 100L163.89 100L163.89 106.52L162.01 106.52L162.01 91.07L166.25 91.07Q168.64 91.07 169.81 92.18Q170.98 93.29 170.98 95.52Q170.98 96.98 170.37 97.95Q169.77 98.91 168.6 99.28ZM166.25 92.79L163.89 92.79L163.89 98.28L166.25 98.28Q167.62 98.28 168.31 97.58Q169 96.88 169 95.52Q169 94.17 168.31 93.49Q167.62 92.79 166.25 92.79ZM175.25 106.52L175.25 91.07L184.04 91.07L184.04 92.83L177.14 92.83L177.14 97.41L183.76 
+                                                97.41L183.76 99.17L177.14 99.17L177.14 104.77L184.22 104.77L184.22 106.52L175.25 106.52ZM195.63 91.58L195.63 93.62Q194.56 93.05 193.61 92.77Q192.66 92.49 191.78 92.49Q190.24 92.49 189.4 93.15Q188.57 93.82 188.57 95.04Q188.57 96.06 189.12 96.59Q189.68 97.11 191.23 97.43L192.36 97.69Q194.47 98.13 195.46 99.26Q196.47 100.38 196.47 102.26Q196.47 104.51 195.11 105.67Q193.77 106.82 191.15 106.82Q190.16 106.82 189.04 106.58Q187.93 106.33 186.74 105.84L186.74 103.69Q187.89 104.4 188.99 104.77Q190.08 105.13 191.15 
+                                                105.13Q192.75 105.13 193.63 104.42Q194.51 103.72 194.51 102.42Q194.51 101.28 193.88 100.64Q193.25 100 191.81 99.67L190.67 99.43Q188.56 98.96 187.62 97.97Q186.69 96.97 186.69 95.2Q186.69 93.15 187.98 91.98Q189.29 90.8 191.56 90.8Q192.55 90.8 193.56 90.99Q194.57 91.19 195.63 91.58ZM199.19 100.72L199.19 91.07L201.08 91.07L201.08 100.46Q201.08 102.94 201.89 104.04Q202.71 105.13 204.52 105.13Q206.33 105.13 207.14 104.04Q207.94 102.94 207.94 100.46L207.94 91.07L209.84 91.07L209.84 100.72Q209.84 103.74 208.49 105.28Q207.15 
+                                                106.82 204.52 106.82Q201.88 106.82 200.53 105.28Q199.19 103.74 199.19 100.72ZM213.37 106.52L213.37 91.07L215.25 91.07L215.25 104.77L222.02 104.77L222.02 106.52L213.37 106.52ZM219.14 92.83L219.14 91.07L230.9 91.07L230.9 92.83L225.96 92.83L225.96 106.52L224.08 106.52L224.08 92.83L219.14 92.83Z"/>
+                                            </svg>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="3" style="text-align:center;">
+                                            <input type="text" class="register" id="registerResult" readonly="readonly"
+                                                size="10" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                        </form>
+                    </td>
+
+                    <td>
+                        <form id="inputForm" onkeypress="validateKeyPress(event)">
+                            <fieldset>
+                                <legend>Input</legend>
+                                <table>
+                                    <tr>
+                                        <td colspan="2" id="iomessages">&nbsp;</td>
+                                    </tr>
+                                    <tr style="font-weight:bold; color:blue">
+                                        <td>
+                                            <input type="text" class="register" id="input" placeholder="Input" size="14" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <input type="button" value="Done" onclick="completeGetInput();" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                        </form>
+                        <form id="outputForm" action="">
+                            <fieldset>
+                                <legend>Output</legend>
+                                <table>
+                                    <tr style="font-weight:bold; color:blue">
+                                        <td>
+                                            <input type="text" class="register" id="output" size="14" placeholder="Output" readonly="readonly" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <table>
+            <tr>
+                <td>
+                    <form id="control" action="">
+                        <fieldset>
+                            <legend>Control</legend>
+                            <input type="button" value="Reset PC" onclick="resetPC()" />
+                            <input type="button" value="Step" onclick="executeCurrent()" />
+                        </fieldset>
+                    </form>
+                </td>
+
+                <td>
+                    <form id="instructions" action="">
+                        <fieldset>
+                        <legend>Instructions</legend>
+                        <input type="button" value="Clear" onclick="HTMLprogramForm()">
+                        </fieldset>
+                    </form>
+                </td>
+
+                <td>
+                    <form id="other" action="">
+                        <fieldset>
+                            <legend>Other</legend>
+                            <input type="button" value="Export" onclick="exportScript()">
+                            <label for="import" id="import-button">Import</label>
+                            <input type="file" id="import" accept=".c15" onchange="importScript(event.target.files[0])">
+                            <input type="button" value="Rename" onclick="renameTab()">
+                        </fieldset>
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        <form id="program" action="">
+            &nbsp;
+        </form>
+
+        <p id="copyright">&copy; Computer Science, University of Manitoba</p>
+    </div>
+    <script type="text/javascript" src="c1500.js"></script>
+</body>
+</html>
