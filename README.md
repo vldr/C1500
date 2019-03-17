@@ -1,6 +1,7 @@
 # C1500
 A simple emulator for the COMP1500 course at the University of Manitoba.
-gi
+
+
 <img src="http://upx.me/i/MT9VVbV.png" />
 
 # Demo
