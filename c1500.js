@@ -444,6 +444,8 @@ function resetPC() {
     document.querySelector('#registerA').value = '';
     document.querySelector('#registerB').value = '';
     document.querySelector('#registerResult').value = '';
+    document.getElementById('iomessages').innerHTML = ``;
+    waitingForInput = false;
     PC = 1;
 }
 
@@ -556,12 +558,6 @@ function loadSession()
     if (tabs !== null) tabTable = tabs;
     // Otherwise, initialize everything...
     else initializeTabs();
-
-    // Disable waiting for input...
-    waitingForInput = false;
-
-    // Empty the io message...
-    document.getElementById('iomessages').innerHTML = ``;
 
     // Reset our pc...
     resetPC();
