@@ -26,18 +26,25 @@ for (i = 0; i < maxMemory; i++) memoryTable[i] = null;
 
 //************************************************************************** Functions
 
-/*.................................................................... advancePC
-* Advance the Program Counter and redraw the arrow pointer */
-function advancePC(dest) {
-    if (PC < currInstr) {
-        document.getElementById('C' + PC + 'PC').innerHTML = '&nbsp';
-        PC = dest;
-        document.getElementById('C' + PC + 'PC').innerHTML = '==>';
-    }
-}// advancePC
+/**
+ * advancePC
+ * Advance the Program Counter and redraw the arrow pointer
+ * @param {String} dest The destination position... ex: C1, C15, etc.
+ */
+function advancePC(dest) 
+{
+    if (PC > currInstr) return;
 
-/*............................................................. completeGetInput
-* Complete the processing for the GETINPUT command. */
+    document.getElementById('C' + PC + 'PC').innerHTML = '&nbsp';
+    PC = dest;
+    document.getElementById('C' + PC + 'PC').innerHTML = '==>';
+}
+
+/**
+ * completeGetInput
+ * Complete the processing for the GETINPUT command.
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
 function completeGetInput(line) 
 {
     if (waitingForInput) 
@@ -51,11 +58,12 @@ function completeGetInput(line)
         document.getElementById('input').value = null;
         waitingForInput = false;
     }
-}// completeGetInput
+}
 
-
-/*............................................................... executeCurrent
-* Execute the current instruction */
+/**
+ * executeCurrent
+ * Execute the current instruction
+ */
 function executeCurrent() 
 {
     // Check if the user is waiting for input...
@@ -69,7 +77,9 @@ function executeCurrent()
     operand = 'C' + PC + 'operand';
     address = 'C' + PC + 'address';
     destination = 'C' + PC + 'destination';
-    switch (opcode) {
+    
+    switch (opcode) 
+    {
         case "STORE":
             theValue = parseInt(document.getElementById(operand).value);
             theAddress = parseInt(document.getElementById(address).value);
@@ -150,11 +160,15 @@ function executeCurrent()
         default:
             document.getElementById("Messages").innerHTML =
                 'Opcode ' + opcode + ' not supported';
-    }// switch
-}// executeCurrent
+    }
+}
 
-/*......................................................... generateOpCodeFields
-* Generate form fields required for a chosen opcode. */
+/**
+ * generateOpCodeFields
+ * Generate form fields required for a chosen opcode.
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ * @param {Boolean} renderSaving Determines whether to render the saving dialog in the top right...
+ */
 function generateOpCodeFields(line, renderSaving = true) {
     operand = line + "operandTD";
     address = line + "addressTD";
@@ -164,7 +178,8 @@ function generateOpCodeFields(line, renderSaving = true) {
 
     setupObject(line, opcode, renderSaving);
 
-    switch (opcode) {
+    switch (opcode) 
+    {
         case "STORE":
             document.getElementById(operand).innerHTML = HTMLoperandField(line);
             document.getElementById(address).innerHTML = HTMLaddressField(line);
@@ -193,12 +208,16 @@ function generateOpCodeFields(line, renderSaving = true) {
             break;
         default:
             document.getElementById("Messages").innerHTML = 'Opcode ' + opcode + ' not supported';
-    }// switch
-}// generateOpCodeFields
+    }
+}
 
-/*............................................................. HTMLaddressField
-* Generate the HTML for the address field in the program form */
-function HTMLaddressField(line) {
+/**
+ * HTMLaddressField
+ * Generate the HTML for the address field in the program form 
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
+function HTMLaddressField(line) 
+{
     result = `<select name="address" id="${line}address" onchange="updateAddressValue(event, '${line}')">\n`;
     result += '<option value="0" selected="selected">0</option>\n';
     for (i = 1; i < maxMemory; i++)
@@ -206,11 +225,15 @@ function HTMLaddressField(line) {
     result += '</select>\n';
     
     return result;
-}// HTMLaddressField
+}
 
-/*......................................................... HTMLdestinationField
-* Generate the HTML for the destination field in the program form */
-function HTMLdestinationField(line) {
+/**
+ * HTMLdestinationField
+ * Generate the HTML for the destination field in the program form
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
+function HTMLdestinationField(line) 
+{
     result = `<select name="destination" id="${line}destination" onchange="updateAddressValue(event, '${line}')">\n`;
     result += '<option value="C1" selected="selected">C1</option>\n';
     for (i = 2; i <= currInstr; i++) {
@@ -218,11 +241,15 @@ function HTMLdestinationField(line) {
     }
     result += '</select>\n';
     return result;
-}// HTMLdestinationField
+}
 
-/*............................................................... HTMLlabelField
-* Generate the HTML for the label field in the program form */
-function HTMLlabelField(line) {
+/**
+ * HTMLlabelField
+ * Generate the HTML for the label field in the program form
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
+function HTMLlabelField(line) 
+{
     result = '<td class="label" width="100px">';
     result += '<input type="text" size="4" value=';
     result += line;
@@ -231,11 +258,14 @@ function HTMLlabelField(line) {
     result += 'label" readonly="readonly"';
     result += ' /></td>\n';
     return result;
-}// HTMLlabelField
+}
 
-/*.............................................................. HTMLmemoryTable
-* Generate the HTML for the memory table */
-function HTMLmemoryTable() {
+/**
+ * HTMLmemoryTable
+ * Generate the HTML for the memory table
+ */
+function HTMLmemoryTable() 
+{
     result = '<fieldset>\n';
     result += '<legend>Memory</legend>\n';
     result += '<table style="border-collapse: collapse;">\n';
@@ -256,11 +286,15 @@ function HTMLmemoryTable() {
     result += '</table>\n';
     result += '</fieldset>\n';
     document.getElementById("memoryTable").innerHTML = result;
-}// HTMLmemoryTable
+}
 
-/*.............................................................. HTMLopCodeField
-* Generate the HTML for the opcode field in the program form */
-function HTMLopCodeField(line) {
+/**
+ * HTMLopCodeField
+ * Generate the HTML for the opcode field in the program form
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
+function HTMLopCodeField(line) 
+{
     result = '<td><select name="opcode" id=';
     result += '"' + line + 'opcode"';
     result += ' onChange="generateOpCodeFields(';
@@ -282,17 +316,24 @@ function HTMLopCodeField(line) {
     result += '<option value="JUMPIFZERO">JUMPIFZERO</option>\n';
     result += '</select></td>\n';
     return result;
-}// HTMLopCodeField
+}
 
-/*............................................................. HTMLoperandField
-* Generate the HTML for the operand field in the program form */
-function HTMLoperandField(line) {
+/**
+ * HTMLoperandField
+ * Generate the HTML for the operand field in the program form
+ * @param {String} line The line that the instruction is on... ex: C1, C15, etc...
+ */
+function HTMLoperandField(line) 
+{
     return `<input type="text" size="10" onchange="updateOperandValue(event, '${line}')" id="${line}operand" />`;
-}// HTMLoperandField
+}
 
-/*.............................................................. HTMLprogramForm
-* Generate the HTML for the program form */
-function HTMLprogramForm() {
+/**
+ * HTMLprogramForm
+ * Generate the HTML for the program form
+ */
+function HTMLprogramForm() 
+{
     result = '<fieldset>\n';
     result += '<legend>Program</legend>\n';
     result += '<table id="opcodeList">\n';
@@ -325,20 +366,25 @@ function HTMLprogramForm() {
     result += '</table>\n';
     result += '</fieldset> \n';
     document.getElementById("program").innerHTML = result;
-}// HTMLprogramForm
+}
 
-/*...................................................................... intDiv
-* Perform integer division. */
-function intDiv(a, b) {
+/**
+ * intDiv
+ * Perform integer division.
+ * @param {Integer} a The first integer...
+ * @param {Integer} b The second integer...
+ */
+function intDiv(a, b) 
+{
     var result = a / b;
-    if (result >= 0)
-        return Math.floor(result);
-    else
-        return Math.ceil(result);
-}// intDiv
+    if (result >= 0) return Math.floor(result);
+    else return Math.ceil(result);
+}
 
-/*...................................................................... loadAll
-* Load the entire page. */
+/**
+ * loadAll
+ * Load the entire page.
+ */
 function loadAll() {
     regA = regB = regResult = null;
     HTMLprogramForm();
@@ -353,20 +399,24 @@ function loadAll() {
 
     // Load our session...
     loadSession();
-}// loadAll
+}
 
-/*.......................................................... HTMLinstructionForm
-* Generate the HTML for the Instructions form */
+/**
+ * HTMLinstructionForm
+ * Generate the HTML for the Instructions form
+ */
 function HTMLinstructionForm() {
     result = "<fieldset>\n";
     result += "  <legend>Instructions</legend>\n";
     result += '  <input type="button" value="Clear" onclick="HTMLprogramForm()" />\n';
     result += "</fieldset>\n";
     document.getElementById("instructions").innerHTML = result;
-}// HTMLinstructionForm
+}
 
-/*...................................................................... resetPC
-* Reset the Program Counter to the first instruction. */
+/**
+ * resetPC
+ * Reset the Program Counter to the first instruction.
+ */
 function resetPC() {
     currPC = 'C' + PC + 'PC';
     document.getElementById(currPC).innerHTML = '&nbsp';
@@ -376,25 +426,34 @@ function resetPC() {
     document.querySelector('#registerB').value = '';
     document.querySelector('#registerResult').value = '';
     PC = 1;
-}// resetPC
+}
 
-/*..................................................................... showRegA
- * update the value of the A register field */
-function showRegA() {
+/**
+ * showRegA
+ * Update the value of the A register field
+ */
+function showRegA() 
+{
     document.getElementById("registerA").value = regA;
-}// showRegA
+}
 
-/*..................................................................... showRegB
-* update the value of the B register field */
-function showRegB() {
+/**
+ * showRegB
+ * Update the value of the B register field
+ */
+function showRegB() 
+{
     document.getElementById("registerB").value = regB;
-}// showRegB
+}
 
-/*................................................................ showRegResult
-* update the value of the Result register field */
-function showRegResult() {
+/**
+ * showRegResult
+ * Update the value of the Result register field
+ */
+function showRegResult() 
+{
     document.getElementById("registerResult").value = regResult;
-}// showRegResult
+}
 
 /**
  * setObj
