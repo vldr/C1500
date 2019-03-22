@@ -24,6 +24,11 @@ var inputAddress = 0;
 //............................................................ initialize tables
 for (i = 0; i < maxMemory; i++) memoryTable[i] = null;
 
+/**
+ * Our return stack register...
+ */
+let returnStack = [];
+
 //************************************************************************** Functions
 
 /**
@@ -165,15 +170,67 @@ function executeCurrent()
             document.getElementById('output').value = theValue;
             advancePC(PC + 1);
             break;
+        case "INC": 
+        case "DEC": 
+        {
+            // Setup our address...
+            let position = parseInt(document.getElementById(address).value);
+
+            // Check if the memory in the address is null, then decrement it...
+            if (memoryTable[position] !== null) 
+            {
+                // Update our memory table value...
+                memoryTable[position] = memoryTable[position] + (opcode === "INC" ? 1 : -1);
+
+                // Setup our result in the result register...
+                document.getElementById('registerResult').value = memoryTable[position];
+
+                // Rerender our memory...
+                HTMLmemoryTable();
+            }
+
+            // Advance our pc...
+            advancePC(PC + 1);
+
+            // Break here...
+            break;
+        }
+        case "GOSUB": 
+        {
+            // Setup our destination...
+            let position = document.getElementById(destination).value.substring(1);
+
+            // Store our one ahead of the current location in the stack...
+            returnStack.push(PC + 1)
+
+            // Advance to the location...
+            advancePC(parseInt(position));
+
+            // Break here...
+            break;
+        }
+        case "RETURN": 
+        {
+            // Check if our stack isn't empty...
+            if (returnStack.length === 0) break;
+               
+            // Advance to the previous location...
+            advancePC(returnStack.pop());
+
+            // Break here...
+            break;
+        }
         case "JUMP":
-        case "JUMPIFZERO":
+        case "JUMPIFZERO":      
+        case "JUMPIFNOTZERO":      
             whereTo = document.getElementById(destination).value.substring(1);
             result = document.getElementById('registerResult').value;
             document.getElementById("Messages").innerHTML = whereTo + "&nbsp;" + result;
-            if (opcode == 'JUMP' || (opcode == 'JUMPIFZERO' && result == '0'))
-                advancePC(parseInt(whereTo));
-            else
-                advancePC(PC + 1);
+            if (opcode == "JUMP" 
+            || (opcode === "JUMPIFZERO" && result === "0") 
+            || (opcode === "JUMPIFNOTZERO" && result !== "0")) advancePC(parseInt(whereTo));
+            else advancePC(PC + 1);
+
             break;
         case "NONE":
             advancePC(PC + 1);
@@ -209,6 +266,8 @@ function generateOpCodeFields(line, renderSaving = true) {
         case "GETA":
         case "GETB":
         case "GETINPUT":
+        case "INC":
+        case "DEC":
         case "OUTPUT":
             document.getElementById(operand).innerHTML = '&nbsp;';
             document.getElementById(address).innerHTML = HTMLaddressField(line);
@@ -224,6 +283,8 @@ function generateOpCodeFields(line, renderSaving = true) {
             break;
         case "JUMP":
         case "JUMPIFZERO":
+        case "JUMPIFNOTZERO":
+        case "GOSUB":
             document.getElementById(operand).innerHTML = '&nbsp;';
             document.getElementById(address).innerHTML = HTMLdestinationField(line);
             break;
@@ -322,6 +383,8 @@ function HTMLopCodeField(line)
     result += '<option value="NONE" selected="selected">&nbsp;</option>\n';
     result += '<option value="SAVE">SAVE</option>\n';
     result += '<option value="STORE">STORE</option>\n';
+    result += '<option value="INC">INC</option>\n';
+    result += '<option value="DEC">DEC</option>\n';
     result += '<option value="GETA">GETA</option>\n';
     result += '<option value="GETB">GETB</option>\n';
     result += '<option value="ADD">ADD</option>\n';
@@ -333,6 +396,9 @@ function HTMLopCodeField(line)
     result += '<option value="OUTPUT">OUTPUT</option>\n';
     result += '<option value="JUMP">JUMP</option>\n';
     result += '<option value="JUMPIFZERO">JUMPIFZERO</option>\n';
+    result += '<option value="JUMPIFNOTZERO">JUMPIFNOTZERO</option>\n';
+    result += '<option value="GOSUB">GOSUB</option>\n';
+    result += '<option value="RETURN">RETURN</option>\n';
     result += '</select></td>\n';
     return result;
 }
@@ -388,6 +454,24 @@ function HTMLprogramForm()
 }
 
 /**
+ * clearTab
+ * Clears all the fields in the tab...
+ */
+function clearTab() {
+    // Ask the user if they are totally sure...
+    if (!confirm('Are you sure you want to clear EVERYTHING?!')) return;
+
+    // Render our entire fields empty...
+    HTMLprogramForm();
+
+    // Clear our opcodes...
+    tabTable[activeTab].instructionTable = [];
+
+    // Save the session...
+    saveSession();
+}
+
+/**
  * intDiv
  * Perform integer division.
  * @param {Integer} a The first integer...
@@ -427,7 +511,7 @@ function loadAll() {
 function HTMLinstructionForm() {
     result = "<fieldset>\n";
     result += "  <legend>Instructions</legend>\n";
-    result += '  <input type="button" value="Clear" onclick="HTMLprogramForm()" />\n';
+    result += '  <input type="button" value="Clear" onclick="clearTab()" />\n';
     result += "</fieldset>\n";
     document.getElementById("instructions").innerHTML = result;
 }
@@ -446,6 +530,7 @@ function resetPC() {
     document.querySelector('#registerResult').value = '';
     document.getElementById('iomessages').innerHTML = ``;
     waitingForInput = false;
+    returnStack = [];
     PC = 1;
 }
 
