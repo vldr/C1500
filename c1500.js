@@ -469,6 +469,9 @@ function clearTab() {
 
     // Save the session...
     saveSession();
+
+    // Load our session...
+    loadSession();
 }
 
 /**
