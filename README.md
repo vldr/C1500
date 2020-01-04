@@ -2,7 +2,7 @@
 A simple emulator for the COMP1500 course at the University of Manitoba.
 
 
-<img src="http://upx.me/i/MT9VVbV.png" />
+<img src="http://i.vldr.org/i/MT9VVbV.png" />
 
 # Demo
 http://www.cs.umanitoba.ca/~comp1500/
